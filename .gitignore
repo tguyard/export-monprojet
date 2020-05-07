@@ -1,2 +1,5 @@
 dossier.pdf
 node_modules/
+config.json
+example*.json
+output*

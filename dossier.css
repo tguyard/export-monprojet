@@ -2,8 +2,6 @@
   box-sizing: border-box;
 }
 
-
-
 :root {
   --page-margin: 2cm;
   --border-color: #ddd9d9;
@@ -17,15 +15,15 @@ body {
   color: #444;
   background: none;
   font-size: var(--default-font-size);
-  
-  padding: var(--page-margin);
+  padding: .5cm;
 }
+
 
 hr {
     margin-bottom: var(--page-margin);
     color: transparent;
     border-color: transparent;
-    page-break-before: always;
+    page-break-after: always;
 }
 
 /* Headings */
@@ -37,6 +35,8 @@ h5,
 h6 {
   page-break-after: avoid;
   font-family: 'Open Sans', sans-serif;
+  orphans: 3;
+  widows: 3;
 }
 h1 {
   font-size: 19pt;
@@ -44,18 +44,32 @@ h1 {
   margin-bottom: var(--page-margin);
 }
 h2 {
-  font-size: 17pt;
+  font-size: 18pt;
   margin-top: calc(var(--page-margin) / 2);
+  text-align: center;
 }
 h3 {
   margin-bottom: 10px;
   font-size: var(--default-font-size);
   margin-top: calc(var(--page-margin) / 2);
+  font-size: 16pt;
+  font-style: italic;
 }
 h4,
 h5,
 h6 {
   font-size: var(--default-font-size);
+  margin-bottom: 3mm;
+}
+
+h5 {
+  font-weight: normal
+    
+}
+
+h5 {
+  font-style: italic;
+  margin: 3mm 0;
 }
 
 p,
@@ -67,6 +81,11 @@ h3 {
 
 table {
     border-collapse: collapse;
+    margin-bottom: .5cm;
+}
+
+table.table-list {
+  width: 100%;
 }
 
 th {
@@ -101,7 +120,51 @@ td + th {
 }
 
 
+table.survey {
+  width: 100%;
+}
 
+table.survey td, table.survey th  {
+  border: 1px solid var(--border-color);
+  padding: 2mm;
+}
+
+table.survey thead th  {
+  font-size: 80%;
+}
+
+table.survey thead td {
+  border: none;
+}
+
+td.option {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+.name {
+  text-transform: capitalize;
+}
+
+
+.text-user {
+  white-space: pre-wrap;
+  background: #f7f7f7;
+  border:1px solid var(--border-color);
+   border-radius: 4px;
+  padding: 4mm;
+  margin-bottom: .5cm;
+}
+
+
+.checked:before {
+  content: '☑ ';
+}
+
+.che:before {
+  content: '☐ ';
+}
 
 
 

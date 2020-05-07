@@ -1,0 +1,791 @@
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="./dossier.css" />
+  </head>
+  <body>
+    <h1>{{ entete.libelle }}</h1>
+
+    <h3>infos</h3>
+    <table class="properties" style="width: 100%;">
+      <tr>
+        <th>Date de début</th>
+        <td>{{ date entete.dateDebut }}</td>
+        <th>Date de fin</th>
+        <td>{{ date entete.dateFin }}</td>
+      </tr>
+
+      <tr>
+        <th>Nombre d'animateurs</th>
+        <td>{{ info_generale.camp.previsionNbreAnimateurs }}</td>
+        <th>Nombre de jeunes</th>
+        <td>{{ info_generale.camp.previsionNbreParticipants }} ({{ info_generale.camp.previsionNbreEquipes }} équipes)</td>
+      </tr>
+
+      <tr>
+        <th>Nombre de filles</th>
+        <td>{{ info_generale.camp.previsionNbreFilles }}</td>
+        <th>Nombre de garçons</th>
+        <td>{{ info_generale.camp.previsionNbreGarcons }}</td>
+      </tr>
+
+      <tr>
+        <th>Nombre de 6-13 ans</th>
+        <td>{{ info_generale.camp.previsionNbre613 }}</td>
+        <th>Nombre de 14-17 ans</th>
+        <td>{{ info_generale.camp.previsionNbre1417 }}</td>
+      </tr>
+
+      <tr>
+        <th>Age mini</th>
+        <td>{{ info_generale.camp.ageMini }} ans</td>
+        <th>Age maxi</th>
+        <td>{{ info_generale.camp.ageMaxi }} ans</td>
+      </tr>
+    </table>
+
+    <h3>Structures</h3>
+    <table class="properties">
+{{#info_generale.campStructures}}
+      <tr>
+        <td>{{ structure.libelle }}</td>
+      </tr>
+{{/info_generale.campStructures}}
+    </table>
+
+    <h3>Équipier territorial en soutient</h3>
+    <div class="name">{{lower info_generale.campAdherentSoutiens.adherent.prenom }} {{lower info_generale.campAdherentSoutiens.adherent.nom}}</div>
+
+{{#lieux.campLieux}}
+    <h3>
+      Du {{ date dateDebut }}
+      au {{ date dateFin }}
+      nous seront à "{{ libelle }}"
+    </h3>
+    <address>
+      <div>{{ adresseLigne1 }}</div>
+{{^adresseLigne2}}
+      <div>{{ adresseLigne2 }}</div>
+{{/adresseLigne2}}
+      <div>{{ codePostal }} {{ ville }} {{ pays }}</div>
+      <div><a href="tel:{{ telephone }}">{{ telephone }}</a></div>
+    </address>
+    <p>Distance : {{ nbreKm }} Km en {{ moyenTransport }}</p>
+{{/lieux.campLieux}}
+
+    <h3>La maitrise</h3>
+
+<!-- FIXME: ajouter les colonnes qui manques -->
+    <table class="">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>En stage</th>
+          <th>Resp</th>
+          <th>Présent</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#staff.campAdherentStaffs}}
+        <tr>
+          <td class="name">{{lower adherent.prenom }} {{lower adherent.nom }}</td>
+          <td>
+            {{#if validationStagePratiqueBafa}}BAFA{{/if}}
+            {{#if validationStagePratiqueBafd}}BAFD{{/if}}
+          </td>
+          <td></td>
+          <td>du {{ shortdate dateDebutPresence }} au {{ shortdate dateFinPresence }}</td>
+        </tr>
+{{/staff.campAdherentStaffs}}
+      </tbody>
+    </table>
+
+
+    <hr />
+
+    <h2>Le projet pédagogique</h2>
+    <h3>Analyse de l'unité</h3>
+    <div class="text-user">{{ trim projet_peda.camp.projetPedaBilanAnnee}}</div>
+
+    <h3>Nos ambitions pédagogiques</h3>
+    <div class="text-user">{{ trim projet_peda.camp.projetPedaAmbitions}}</div>
+
+
+    <hr />
+
+    <h2>Enrichir le projet</h2>
+
+{{#if scoute}}
+    <h3>La méthode scoute</h3>
+
+    <h4>La progression personnelle</h4>
+    <h5>Quel est le projet choisi ? Comment l'avez vous enrichi ? Comment fait il grandir les jeunes ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question1 }}</div>
+
+    <h5>Quel est l’imaginaire associé à ce projet ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question2 }}</div>
+
+    <ul>
+      <li>
+        {{#ifEquals "1" scoute.surveyjsReponsesJson.question3 }}Certaines veillées sont préparées par les jeunes (et un chef){{/ifEquals}}
+        {{#ifEquals "2" scoute.surveyjsReponsesJson.question3 }}Les veillées ne seront pas préparées par les jeunes{{/ifEquals}}
+      </li>
+      <li>
+        {{#ifEquals "1" scoute.surveyjsReponsesJson.question5 }}Certains temps spirituels sont préparés par les jeunes (et un chef) {{/ifEquals}}
+        {{#ifEquals "2" scoute.surveyjsReponsesJson.question5 }}Les temps spirituels ne seront pas préparées par les jeunes{{/ifEquals}}
+      </li>
+    </ul>
+
+    <h5>Comment allons nous mettre en oeuvre la progression personnelle (atouts-veilleurs/rôles-labels-+personnels/itinéraires)</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question4 }}</div>
+
+    <h4>Le système des équipes et le jeu des conseils</h4>
+    <h5>Comment sera mis en place le jeu des conseils ? Le camp contient-il des temps vécus en équipe ? Si oui, lesquels ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question8 }}</div>
+
+    <h4>Le cadre symbolique</h4>
+    <h5>Quels sont les temps du camp consacré à faire vivre le cadre symbolique ? Y a-t-il une cérémonie de début de camp ? de fin de camp ? La progression des jeunes (collective ou personnelle) est elle matérialisée avec des symboles associés à ce cadre ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question9 }}</div>
+
+    <h4>La vie dans la nature</h4>
+    <h5>Comment allons-nous organiser les installations ? Y a-t-il un but pédagogique à ce temps ? Allons-nous découvrir des éléments de la nature durant le camp ? Si oui, lesquels ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question10 }}</div>
+
+    <h4>La Promesse et la Loi scoute</h4>
+    <h5>Comment allons nous organiser la rédaction de la charte (serment de peuplade, pacte d'aventure, charte...) et éventuellement les promesses ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question11 }}</div>
+
+    <h4>L’engagement dans la communauté</h4>
+    <h5>Comment allons-nous organiser l’implication dans la communauté locale de la {{ branche.name }} ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question12 }}</div>
+
+    <h4>Le soutien adulte</h4>
+
+    <table class="survey">
+      <thead>
+        <tr>
+          <td></td>
+          <th><div>Totalement</div></th>
+          <th><div>Plutôt oui</div></th>
+          <th><div>Pas toujours</div></th>
+          <th><div>Parfois</div></th>
+        </tr>
+      </thead>
+{{#ifEquals "lj" branche.id }}
+      <tbody>
+        <tr>
+          <td>Chaque chef est en situation de confiance réciproque avec les jeunes</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row1.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row1.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row1.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row1.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Chaque chef de la maîtrise assure une présence sécurisante : assure la sécurité physique, affective et psychologique des enfants</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row2.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row2.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row2.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row2.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Chaque chef de la maîtrise est dans une relation de complicité dans le jeu</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row3.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row3.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row3.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp8-11.row3.column4 }}✔️{{/if}}</td>
+        </tr>
+      </tbody>
+{{/ifEquals }}
+{{#ifEquals "sg" branche.id }}
+      <tbody>
+        <tr>
+          <td>Être à l’écoute</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row1.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row1.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row1.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row1.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Créer une relation de confiance dans un respect mutuel</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row2.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row2.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row2.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row2.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Etre bienveillant vis-à-vis de n’importe quel jeune (et adulte)</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row3.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row3.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row3.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row3.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Reformuler les demandes des jeunes ados pour ne pas être dans l’interprétation</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row4.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row4.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row4.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row4.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Être également soi-même en questionnement</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row5.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row5.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row5.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row5.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Être vrai, authentique</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row6.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row6.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row6.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp11-14.row6.column4 }}✔️{{/if}}</td>
+        </tr>
+      </tbody>
+{{/ifEquals }}
+{{#ifEquals "sg" branche.id }}
+      <tbody>
+        <tr>
+          <td>Chaque chef est en situation d’écoute avec chaque jeune</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row1.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row1.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row1.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row1.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Chaque chef est en situation de valoriser chaque jeune dans ce qu’il entreprend</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row2.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row2.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row2.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row2.column4 }}✔️{{/if}}</td>
+        </tr>
+        <tr>
+          <td>Chaque chef est en situation de stimuler les jeunes vers des projets personnels et d’équipe</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row3.column1 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row3.column2 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row3.column3 }}✔️{{/if}}</td>
+          <td class="option">{{#if scoute.surveyjsReponsesJson.camp14-17.row3.column4 }}✔️{{/if}}</td>
+        </tr>
+      </tbody>
+{{/ifEquals }}
+    </table>
+
+    <h5>Comment allons-nous nous organiser pour mettre en place une relation éducative de qualité avec les jeunes ?</h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question15 }}</div>
+
+    <h5>Décisions prises pour avoir une vie de maitrise efficace, cool et fun Quels sont les temps en maitrise que vous prévoyez ? Et dans quel but ? </h5>
+    <div class="text-user">{{ trim scoute.surveyjsReponsesJson.question16 }}</div>
+
+    <hr />
+{{/if}}
+
+{{#if spirit}}
+    <h3>La vie spirituelle</h3>
+
+    <h4>Donner du sens aux expériences vécues à la lumière de l’évangile </h4>
+
+    <h5>
+      Chaque jour, nous prévoyons du temps pour donner un peu d’oxygène à notre quotidien, 
+      pour réfléchir un peu au sens avec les jeunes, pour leur donner le temps d’expérimenter 
+      la prière ? Comment notre démarche spirituelle s’insère dans notre planning ? 
+    </h5>
+    <div class="text-user">{{ trim spirit.surveyjsReponsesJson.organisation-logistique }}</div>
+
+    <h5>
+       Notre aumônier est invité sur notre camp ? 
+    </h5>
+
+    <p>
+        {{#ifEquals "1" spirit.surveyjsReponsesJson.aumonier-sur-camp }}Oui, depuis 3 mois{{/ifEquals}}
+        {{#ifEquals "2" spirit.surveyjsReponsesJson.aumonier-sur-camp }}Bien sûr{{/ifEquals}}
+        {{#ifEquals "3" spirit.surveyjsReponsesJson.aumonier-sur-camp }}Absolument{{/ifEquals}}
+        {{#ifEquals "4" spirit.surveyjsReponsesJson.aumonier-sur-camp }}Non, on a totalement oublié{{/ifEquals}}
+        {{^spirit.surveyjsReponsesJson.aumonier-sur-camp}}<i>Pas de réponse !</i>{{/spirit.surveyjsReponsesJson.aumonier-sur-camp}}
+    </p>
+
+    <!-- TODO Consevoir la démarche radio -->
+
+    <h5>Concevoir la démarche spirituelle</h5>
+    <div class="text-user">{{ trim spirit.surveyjsReponsesJson.description-demarche }}</div>
+
+    <hr />
+{{/if}}
+
+{{#if maitrise}}
+    <h3>La charte de maîtrise</h3>
+
+    <h4>Nous souhaitons vivre ensemble un camp sympathique </h4>
+    <h5>Quelles règles choississons-nous par rapport au téléphone ? À la cigarette ? À la gestion de couples au sein de la maîtrise ?</h5>
+    <div class="text-user">{{ trim maitrise.surveyjsReponsesJson.vivre-camp-sympa }}</div>
+    
+    <h4>Nous souhaitons être modélisants pour les jeunes </h4>
+    <h5>Sur quels aspects souhaitons-nous particulièrement être modélisants ? Tenues, langage, services, retards ?</h5>
+    <div class="text-user">{{ trim maitrise.surveyjsReponsesJson.modélisants-pour-jeunes }}</div>
+
+    <h4> Nous souhaitons une maîtrise qui fonctionne bien  </h4>
+    <h5> Comment son prises les décisions ? Comment sont gérés les désaccords ? Quel est le rôle du chef d'unité ? 
+    Que faisons-nous si des tensions apparaissent durant le camp ? Quand prenons-nous des pauses durant le camp et durant combien de temps? </h5>
+    <div class="text-user">{{ trim maitrise.surveyjsReponsesJson.maitrise-fonctionne-bien }}</div>
+
+    <h4>Autre choix de maîtrise pour le camp</h4>
+    <h5>Y-a-t'il d'autres règles de vie que vous souhaiteriez vous fixer ?</h5>
+    <div class="text-user">{{ trim maitrise.surveyjsReponsesJson.autre-maitrise-camp }}</div>
+
+
+    <hr />
+{{/if}}
+
+{{#if appel-age-sup}}
+{{#ifEquals "lj" branche.id }}
+    <h3> Appel de la tribu </h3>
+{{/ifEquals}}
+{{#ifEquals "sg" branche.id }}
+    <h3> Appel de la caravane </h3>
+{{/ifEquals}}
+{{#ifEquals "pk" branche.id }}
+    <h3> Appel de la branche compa </h3>
+{{/ifEquals}}
+    <div class="text-user">{{ trim appel-age-sup.appel }}</div>
+
+    <hr />
+{{/if}}
+
+
+{{#if international-8-17}}
+    <h2>Un camp à l'international</h2>
+
+    <h4>Informations générales</h4>
+
+    <h5>Résumé</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question1 }}</div>
+    <h5>CMPP associé</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question2 }}</div>
+
+    <h4>Intention</h4>
+    <h5>Libellé de l’intention</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question3 }}</div>
+    <h5> Responsable de la fiche d’intention</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question4 }}</div>
+    <h5>Date de début envisagé</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question5 }}</div>
+    <h5>Date de fin envisagée</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question6 }}</div>
+    <h5>Quelles sont les motivations des jeunes</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question7 }}</div>
+    <h5>Quelles sont les motivations de la maitrise </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question8 }}</div>
+    <h5>Quel est votre projet</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question9 }}</div>
+    <h5> Pays ou aura lieu le projet (un ou plusieurs) </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question10 }}</div>
+    <h5> Commentaires </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question11 }}</div>
+
+    <h4>Construction du projet</h4>
+    <h5>Votre projet</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question12 }}</div>
+    <h5>Type de projet</h5>
+    <div class="text-user">
+      {{#international-8-17.surveyjsReponsesJson.question13}}<div>{{.}}</div>{{/international-8-17.surveyjsReponsesJson.question13}}
+    </div>
+    <h5>Libellé du partenaire scout (si partenaire)</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question15 }}</div>
+    <h5>Le partenaire est-il membre de l’Organisation mondiale du mouvement scout (OMMS) et/ou de l’Association mondiale des guides et des éclaireuses (AMGE) ?</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question16 }}</div>
+    <h5>Allez-vous vivre une expérience en lien avec une association locale ? </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question17 }}</div>
+    <h5>Libellé de l’association</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question18 }}</div>
+    <h5>Commentaire sur le lieu du projet</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question19 }}</div>
+    <h5>S’il y a des activités en autonomie, comment seront-elles organisées et comment vont-elles se dérouler</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question20 }}</div>
+    <h5>Un des membres de la maîtrise aura-t-il suivi la formation MARI au cours des 3 dernières années ?</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question21 }}</div>
+
+    <h4>Logistique / préparation</h4>
+    <h5>Gestion des moyens de paiements (retrait, change, taux, …)</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question22 }}</div>
+    <h5>Passeport</h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question23 }}</div>
+    <h5>Comment sont organisés les trajets depuis/jusqu’à l’aéroport/gare sur place ? </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question24 }}</div>
+    <h5>Préparation à l’interculturel (culture/nourriture/religion) </h5>
+    <div class="text-user">{{ trim international-8-17.surveyjsReponsesJson.question25 }}</div>
+
+    <hr />
+{{/if}}
+
+{{#if jumelage}}
+    <h2>Jumelage</h2>
+
+Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
+
+    <h2>Les jeunes</h2>
+    <table class="survey">
+      <thead>
+        <tr>
+          <th><div>Unité</div></th>
+          <th><div>Garçons</div></th>
+          <th><div>Filles</div></th>
+          <th><div>1ère année</div></th>
+          <th><div>2ème année</div></th>
+          <th><div>3ème année</div></th>
+        </tr>
+      </thead>
+      <tbody>
+{{#jumelage.surveyjsReponsesJson.question1.row1}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question1.row1}}
+{{#jumelage.surveyjsReponsesJson.question1.row2}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question1.row2}}
+{{#jumelage.surveyjsReponsesJson.question1.row3}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question1.row3}}
+      </tbody>
+    </table>
+
+    <h5>A la vue des éléments ci-dessus, et du fonctionnement des unités durant l’année 
+    (groupes d’amis, dynamiques de groupe, cultures des jeunes, modes de fonctionnements...) 
+    y a-t-il une organisation ou des actions à mettre en oeuvre pour faciliter la cohésion 
+    des unités jumelées ?</h5>
+    <div class="text-user">{{ trim jumelage.surveyjsReponsesJson.question2 }}</div>
+
+    <h2> Les maîtrises </h2>
+    <table class="survey">
+      <thead>
+        <tr>
+          <th><div>Unité</div></th>
+          <th><div>Garçons</div></th>
+          <th><div>Filles</div></th>
+          <th><div>1ère année</div></th>
+          <th><div>2ème année</div></th>
+          <th><div>3ème année</div></th>
+        </tr>
+      </thead>
+      <tbody>
+{{#jumelage.surveyjsReponsesJson.question3.row1}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question3.row1}}
+{{#jumelage.surveyjsReponsesJson.question3.row2}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question3.row2}}
+{{#jumelage.surveyjsReponsesJson.question3.row3}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+          <td class="option">{{ column4 }}</td>
+          <td class="option">{{ column5 }}</td>
+          <td class="option">{{ column6 }}</td>
+        </tr>
+{{/jumelage.surveyjsReponsesJson.question3.row3}}
+      </tbody>
+    </table>
+
+    <h5>A la vue des éléments ci-dessus, et du fonctionnement de 
+    chaque maîtrise, y a-t-il une organisation ou des actions à 
+    mettre en oeuvre pour faciliter la cohésion de la maîtrise durant le camp ?</h5>
+    <div class="text-user">{{ trim jumelage.surveyjsReponsesJson.question4 }}</div>
+
+
+    <hr />
+{{/if}}
+
+    <hr />
+
+    <h2>Les activités</h2>
+
+    <h3>Journée type</h3>
+    <table class="">
+      <thead>
+        <tr>
+          <th>Heure</th>
+          <th>Les jeunes</th>
+          <th>Les chefs</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#journee_type.campJourneeTypes}}
+        <tr>
+          <td>{{ heureDebut }}</td>
+          <td>{{ activiteParticipants }}</td>
+          <td>{{ activiteStaff }}</td>
+        </tr>
+{{/journee_type.campJourneeTypes}}
+      </tbody>
+    </table>
+
+    <hr />
+
+    <h3>Planning des activités</h3>
+    <table class="">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Imaginaire</th>
+          <th>Responsable</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#grille_activite.campGrilleActivites}}
+        <tr>
+          <td>
+            {{ nameddate dateActivite }}
+            {{#ifEquals 1 creneau }}matin{{/ifEquals}}
+            {{#ifEquals 2 creneau }}aprem'{{/ifEquals}}
+            {{#ifEquals 3 creneau }}soir{{/ifEquals}}
+          </td>
+          <td>{{ description }}</td>
+          <td>{{ imaginaire }}</td>
+          <td class="name">{{ lower staffResponsable.adherent.prenom }}</td>
+        </tr>
+{{/grille_activite.campGrilleActivites}}
+      </tbody>
+    </table>
+
+    <hr />
+
+    <h3>Menus</h3>
+    <table class="">
+      <thead>
+        <tr>
+          <th>Repas</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#menu.campMenus}}
+        <tr>
+          <td>
+            {{ nameddate dateMenu }}
+            {{#ifEquals 1 repas }}ptit déj{{/ifEquals}}
+            {{#ifEquals 2 repas }}déjeuner{{/ifEquals}}
+            {{#ifEquals 3 repas }}gouter{{/ifEquals}}
+            {{#ifEquals 4 repas }}diner{{/ifEquals}}
+          </td>
+          <td>{{ description }}</td>
+        </tr>
+{{/menu.campMenus}}
+      </tbody>
+    </table>
+
+
+{{#if ouverture }}
+    <h2>La démarche d'ouverture</h2>
+
+    <h5> Indiquez les démarches effectuées : communication dans la paroisse, au service municipal de la jeunesse, via le réseau parents et amis, via les jeunes </h5>
+    <div class="text-user">{{ trim ouverture.surveyjsReponsesJson.demarche-recrutement }}</div>
+    
+    <hr />
+{{/if}}
+
+{{#if bafa-bafd }}
+    <h2>Suivi de stage pratique</h2>
+
+    <h5>Chef de stage</h5>
+    <div class="text-user">{{ trim bafa-bafd.surveyjsReponsesJson.question1 }}</div>
+    
+    <h5>Nature du stage</h5>
+    <div class="text-user">{{#ifEquals "1" bafa-bafd.surveyjsReponsesJson.question2 }}BAFA{{/ifEquals}}{{#ifEquals "2" bafa-bafd.surveyjsReponsesJson.question2 }}BAFD{{/ifEquals}}</div>
+
+    <h5> Entretien de début de stage pratique pour fixer ensemble les objectifs du stage - date ? 
+    Entretien de mi-stage pour faire un point - date ? 
+    Entretien de stage pour relire la progression et délivrer l’avis de stage - date ? </h5>
+    <div class="text-user">{{ trim bafa-bafd.surveyjsReponsesJson.question3 }}</div>
+
+    <hr />
+{{/if}}
+
+
+
+
+<!-- ne pas oublier l'implantation -->
+
+<!-- 
+
+  1) Informations
+      Lieu
+      Maitrise
+
+  2) Projet pédagogique
+      Analyse de l'unité
+      Projet pédagogique
+  
+  2') Enrichissement du projet
+      [Methode scoute]
+      [Spi]
+      [Charte de maitrise]
+
+  [2'') International]
+  [2''') Jumelage]
+
+  3) les activités
+      Journée type
+      planning des activités
+      Menus
+      Budget
+
+TODO: Activités marines
+TODO: accompagnement spécifique
+TODO: Accueillir une unité étrangère
+
+  
+  4) le lieu de camp
+      Implentation
+      Adresse et numéraux utiles
+
+  [5) La démarche d'ouverture]
+
+  [6) Suivi de stage pratique]
+
+  7) Annexes
+      La liste des jeunes
+      numéros utiles
+      [Récapitulatif Administratif]
+
+-->
+
+    <hr />
+    <h2>Annexes</h2>
+    <h3>Les jeunes ({{participant.campAdherentParticipants.length}})</h3>
+    <table class="table-list">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Présent</th>
+          <th>Tels</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#participant.campAdherentParticipants}}
+        <tr>
+          <td class="name">{{lower adherent.prenom }} {{lower adherent.nom }}</td>
+          <td>du {{ shortdate dateDebutPresence }} au {{ shortdate dateFinPresence }}</td>
+          <td>P:{{ adherent.telephonePere }} M:{{ adherent.telephoneMere }}</td>
+        </tr>
+{{/participant.campAdherentParticipants}}
+      </tbody>
+    </table>
+
+    <hr />
+
+    <h3>Numéros utiles</h3>
+    <table class="table-list">
+      <thead>
+        <tr>
+          <th>Libellé</th>
+          <th>Contact</th>
+          <th>Tel</th>
+        </tr>
+      </thead>
+      <tbody>
+{{#numero_utile.campNumeroUtiles}}
+        <tr>
+          <td>{{ numeroUtile.libelle }}</td>
+          <td>{{ infosContact }}</td>
+          <td>{{ telephoneContact }}</td>
+        </tr>
+{{/numero_utile.campNumeroUtiles}}
+      </tbody>
+    </table>
+
+{{#if check-list-8-17 }}
+{{#check-list-8-17.surveyjsReponsesJson}}
+    <hr />
+    <h3>Check list administrative</h3>
+
+    <h4>Dossier Jeunesse et Sports</h4>
+    <div class="che{{#contains '1' [Dossier Jeunesse et Sports] }}cked{{/contains}}">Adresse de la DDCS du lieu de camp</div>
+    <div class="che{{#contains '2' [Dossier Jeunesse et Sports] }}cked{{/contains}}">Récépissé de la déclaration de Centre de Vacances</div>
+    <div class="che{{#contains '3' [Dossier Jeunesse et Sports] }}cked{{/contains}}">Instructions de la DDCS du lieu de camp</div>
+    <div class="che{{#contains '4' [Dossier Jeunesse et Sports] }}cked{{/contains}}">Dossier de camp Scouts et Guides de France</div>
+    <div class="che{{#contains '5' [Dossier Jeunesse et Sports] }}cked{{/contains}}">Déclaration d’accident grave en Centre de Vacances</div>
+
+    <h4>Dossier administratif</h4>
+    <div class="che{{#contains '1' [Dossier administratif] }}cked{{/contains}}">Autorisation de camper signée du délégué territorial, du responsable de groupe et éventuellement de l’accompagnateur pédagogique</div>
+    <div class="che{{#contains '2' [Dossier administratif] }}cked{{/contains}}">Carte(s) IGN</div>
+    <div class="che{{#contains '3' [Dossier administratif] }}cked{{/contains}}">Certificat de potabilité de l'eau si nécessaire (source)</div>
+    <div class="che{{#contains '4' [Dossier administratif] }}cked{{/contains}}">Liste des participants avec coordonnées des parents pendant la durée du camp, et copie des formulaires d’adhésions remplis et signés.</div>
+    <div class="che{{#contains '5' [Dossier administratif] }}cked{{/contains}}">Formulaires de déclaration de sinistre Scouts et Guides de France</div>
+    <div class="che{{#contains '6' [Dossier administratif] }}cked{{/contains}}">Photos d'identité de chaque jeune (utiles en cas de fugue)</div>
+    <div class="che{{#contains '7' [Dossier administratif] }}cked{{/contains}}">Attestation d’assurance Scouts et Guides de France et coordonnées de l’assisteur</div>
+    <div class="che{{#contains '8' [Dossier administratif] }}cked{{/contains}}">Visa technique de la commission Marine du Scoutisme Français pour tout projet de navigation</div>
+    <div class="che{{#contains '9' [Dossier administratif] }}cked{{/contains}}">Cartes de recommandation OMMS et AMGE pour un camp à l’étranger</div>
+
+    <h4>Dossier Maîtrise</h4>
+    <div class="che{{#contains '1' [Dossier Maîtrise] }}cked{{/contains}}">Qualifications du Scoutisme Français des membres de la maîtrise</div>
+    <div class="che{{#contains '2' [Dossier Maîtrise] }}cked{{/contains}}">Feuilles de stages pratiques BAFA ou BAFD et documentation de suivi des stagiaires</div>
+    <div class="che{{#contains '3' [Dossier Maîtrise] }}cked{{/contains}}">Fiches sanitaires de liaison des animateurs</div>
+
+    <h4>Dossier Sanitaire</h4>
+    <div class="che{{#contains '1' [Dossier Sanitaire] }}cked{{/contains}}">Cahier d'infirmerie</div>
+    <div class="che{{#contains '2' [Dossier Sanitaire] }}cked{{/contains}}">Dossier sanitaire de chaque participant mineur (attestations de vaccinations obligatoires, antécédents médicaux ou chirurgicaux, feuilles de soins / ordonnances des traitements en cours et coordonnées du médecin traitant, certificat médical de non contre-indication à la pratique d’activités physiques)</div>
+    <div class="che{{#contains '3' [Dossier Sanitaire] }}cked{{/contains}}">Certificats de vaccinations obligatoires des membres de la maîtrise</div>
+    <div class="che{{#contains '4' [Dossier Sanitaire] }}cked{{/contains}}">Imprimés Sécurité Sociale pour les camps à l’étranger ou carte européenne d’assurance maladie</div>
+    <div class="che{{#contains '5' [Dossier Sanitaire] }}cked{{/contains}}">Contrat d’assistance rapatriement des Scouts et Guides de France, procédures et numéros d’urgence pour un camp à l’étranger.</div>
+
+    <h4>Dossier pédagogique</h4>
+    <div class="che{{#contains '1' [Dossier pédagogique] }}cked{{/contains}}">Inventaire du matériel</div>
+    <div class="che{{#contains '2' [Dossier pédagogique] }}cked{{/contains}}">Double des correspondances avec des prestataires (club de voile, équitation....)</div>
+    <div class="che{{#contains '3' [Dossier pédagogique] }}cked{{/contains}}">Fiches techniques des activités</div>
+
+    <h4>Dossier transport</h4>
+    <div class="che{{#contains '1' [Dossier transport] }}cked{{/contains}}">Contrats avec la compagnie de transport</div>
+    <div class="che{{#contains '2' [Dossier transport] }}cked{{/contains}}">Liste des enfants et de l’encadrement par car</div>
+
+    <h4>Dossier intendance</h4>
+    <div class="che{{#contains '1' [Dossier intendance] }}cked{{/contains}}">Cahier d’intendance</div>
+    <div class="che{{#contains '2' [Dossier intendance] }}cked{{/contains}}">Grille des menus</div>
+    <div class="che{{#contains '3' [Dossier intendance] }}cked{{/contains}}">Photocopie des commandes</div>
+
+    <h4>Dossier financier</h4>
+    <div class="che{{#contains '1' [Dossier financier] }}cked{{/contains}}">Cahier de comptabilité</div>
+    <div class="che{{#contains '2' [Dossier financier] }}cked{{/contains}}">Chéquiers, argent liquide </div>
+
+{{/check-list-8-17.surveyjsReponsesJson}}
+{{/if}}
+
+
+
+  </body>
+</html>
