@@ -4,12 +4,49 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
       rel="stylesheet"
     />
+
+    <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" type="text/css" href="./dossier.css" />
   </head>
-  <body>
+  <body class="{{ branche.id }}">
+
+    <div id="first-page">
+      {{#ifEquals 'lj' branche.id }}
+      <img src="./assets/SGDF_LOUVETEAUX_JEANNETTES_orange.png">
+      {{/ifEquals }}
+      {{#ifEquals 'sg' branche.id }}
+      <img src="./assets/SGDF_SCOUTS_GUIDES_bleu.png">
+      {{/ifEquals }}
+      {{#ifEquals 'pk' branche.id }}
+      <img src="./assets/SGDF_PIONNIERS_CARAVELLES_rouge.png">
+      {{/ifEquals }}
+      <div class="title">
+        Dossier de camp<br/>
+        été 2020
+      </div>
+      
+      <div class="foot">
+        <div class="paper top"></div>
+        <div class="blue-background">
+          <div class="subtitle">
+            {{ entete.libelle }}
+          </div>
+          <div class="date">
+            du {{ fulldate entete.dateDebut }} au {{ fulldate entete.dateFin }}
+          </div>
+        </div>
+        <div class="paper bottom"></div>
+      </div>
+    </div>
+
+
     <h1>{{ entete.libelle }}</h1>
 
-    <h3>infos</h3>
+<!--               -->
+<!-- PAGE 1: INFOS -->
+<!--               -->
+
+    <h3 id="infos">Infos</h3>
     <table class="properties" style="width: 100%;">
       <tr>
         <th>Date de début</th>
@@ -47,7 +84,7 @@
       </tr>
     </table>
 
-    <h3>Structures</h3>
+    <h4>Structures</h4>
     <table class="properties">
 {{#info_generale.campStructures}}
       <tr>
@@ -56,15 +93,12 @@
 {{/info_generale.campStructures}}
     </table>
 
-    <h3>Équipier territorial en soutient</h3>
-    <div class="name">{{lower info_generale.campAdherentSoutiens.adherent.prenom }} {{lower info_generale.campAdherentSoutiens.adherent.nom}}</div>
-
 {{#lieux.campLieux}}
-    <h3>
+    <h4>
       Du {{ date dateDebut }}
       au {{ date dateFin }}
       nous seront à "{{ libelle }}"
-    </h3>
+    </h4>
     <address>
       <div>{{ adresseLigne1 }}</div>
 {{^adresseLigne2}}
@@ -76,7 +110,7 @@
     <p>Distance : {{ nbreKm }} Km en {{ moyenTransport }}</p>
 {{/lieux.campLieux}}
 
-    <h3>La maitrise</h3>
+    <h4>La maitrise</h4>
 
 <!-- FIXME: ajouter les colonnes qui manques -->
     <table class="">
@@ -103,8 +137,126 @@
       </tbody>
     </table>
 
+    <h4>Équipier territorial en soutient</h4>
+    {{#info_generale.campAdherentSoutiens}}
+    <div class="name">{{lower adherent.prenom }} {{lower adherent.nom}}</div>
+    {{/info_generale.campAdherentSoutiens}}
 
     <hr />
+<!--               -->
+<!-- PAGE 2: TOC   -->
+<!--               -->
+
+    <h2>Table des matières</h2>
+    <div class="toc">
+      <ul>
+        <li>
+          <div><a href="./#info">Informations</a></div>
+          <ul>
+            <li>Lieu</li>
+            <li>Maitrise</li>
+          </ul>
+        </li>
+<!--  4) le lieu de camp -->
+        <li>
+          <div><a href="#peda">Projet pédagogique</a></div>
+          <ul>
+            <li>Analyse de l'unité</li>
+            <li>Projet pédagogique</li>
+          </ul>
+        </li>
+        <li>
+          <div><a href="#enrich">Enrichir le projet</a></div>
+          <ul>
+          {{#if scoute}}
+            <li>Methode scoute</li>
+          {{/if}}
+          {{#if spirit}}
+            <li>Spi</li>
+          {{/if}}
+          {{#if maitrise}}
+            <li>Charte de maitrise</li>
+          {{/if}}
+          {{#if appel-age-sup}}
+            {{#ifEquals "lj" branche.id }}
+                <li> Appel de la tribu </li>
+            {{/ifEquals}}
+            {{#ifEquals "sg" branche.id }}
+                <li> Appel de la caravane </li>
+            {{/ifEquals}}
+            {{#ifEquals "pk" branche.id }}
+                <li> Appel de la branche compa </li>
+            {{/ifEquals}}
+            {{/if}}
+          </ul>
+        </li>
+        {{#if international-8-17}}
+        <li>
+          <div><a href="#inter">Un camp à l'international</a></div>
+        </li>
+        {{/if}}
+        {{#if jumelage}}
+        <li>
+          <div><a href="#jumelage">Jumelage</a></div>
+        </li>
+        {{/if}}
+        <li>
+          <div><a href="#activite">Les activités</a></div>
+          <ul>
+            <li>Journée type</li>
+            <li>Planning des activités</li>
+            <li>Menus</li>
+          </ul>
+        </li>
+        {{#if marin }}
+        <li>
+          <div><a href="#marins">Activités marines</a></div>
+        </li>
+        {{/if}}
+
+        <li>
+          <div><a href="#pratique">Organisation pratique</a></div>
+          <ul>
+            <li>Budget</li>
+            <li>Lieu et transport</li>
+          </ul>
+        </li>
+<!--
+
+TODO: accompagnement spécifique
+TODO: Accueillir une unité étrangère
+
+-->
+        {{#if ouverture }}
+        <li>
+          <div><a href="#ouverture">La démarche d'ouverture</a></div>
+        </li>
+        {{/if}}
+        {{#if bafa-bafd }}
+        <li>
+          <div><a href="#stage">Suivi de stage pratique</a></div>
+        </li>
+        {{/if}}
+
+        <li>
+          <div><a href="#annexes">Annexes</a></div>
+          <ul>
+            <li>La liste des jeunes</li>
+            <li>Numéros utiles</li>
+            {{#if check-list-8-17 }}
+            <li>Récapitulatif Administratif</li>
+            {{/if}}
+          </ul>
+        </li>
+      <ul>
+    </div>
+
+    <hr />
+
+<!--               -->
+<!-- PAGE 2: PEDA  -->
+<!--               -->
+
 
     <h2>Le projet pédagogique</h2>
     <h3>Analyse de l'unité</h3>
@@ -116,7 +268,12 @@
 
     <hr />
 
-    <h2>Enrichir le projet</h2>
+<!--                             -->
+<!-- PAGE 3: ENRICHIR LE PROJET  -->
+<!--                             -->
+
+
+    <h2 id="enrich">Enrichir le projet</h2>
 
 {{#if scoute}}
     <h3>La méthode scoute</h3>
@@ -353,8 +510,12 @@
 {{/if}}
 
 
+<!--                        -->
+<!-- PAGE 4: INTERNATIONAL  -->
+<!--                        -->
+
 {{#if international-8-17}}
-    <h2>Un camp à l'international</h2>
+    <h2 id="inter">Un camp à l'international</h2>
 
     <h4>Informations générales</h4>
 
@@ -418,10 +579,13 @@
     <hr />
 {{/if}}
 
-{{#if jumelage}}
-    <h2>Jumelage</h2>
+<!--                   -->
+<!-- PAGE 5: JUMELAGE  -->
+<!--                   -->
 
-Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
+
+{{#if jumelage}}
+    <h2 id="jumelage">Jumelage</h2>
 
     <h2>Les jeunes</h2>
     <table class="survey">
@@ -530,9 +694,11 @@ Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
     <hr />
 {{/if}}
 
-    <hr />
+<!--                        -->
+<!-- PAGE 5: LES ACTIVITÉS  -->
+<!--                        -->
 
-    <h2>Les activités</h2>
+    <h2 id="activite">Les activités</h2>
 
     <h3>Journée type</h3>
     <table class="">
@@ -610,8 +776,101 @@ Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
     </table>
 
 
+
+<!--                            -->
+<!-- PAGE 5: Activités marines  -->
+<!--                            -->
+
+{{#if marin }}
+    <h2 id="marins">La démarche d'ouverture</h2>
+
+    <h5>Dates</h5>
+    <div class="text-user">Du {{ marin.surveyjsReponsesJson.question1 }} au {{ marin.surveyjsReponsesJson.question2 }}</div>
+
+    <h5>Nombre d'encadrant</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question3 }}</div>
+    <h5>Nombre de jeunes</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question4 }}</div>
+    <h5>Référent technique marin</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question5 }}</div>
+    <h5>Nature du projet</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question6 }}</div>
+    <h5>Zone de navigation</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question7 }}</div>
+    <h5>Date de début de la navigation</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question8 }}</div>
+    <h5>Date de fin de la navigation</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question9 }}</div>
+    <h5>Liste des encadrants SGDF</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question10 }}</div>
+    <h5>Type de navigation</h5>
+    <div class="che{{#ifEquals '1' marin.surveyjsReponsesJson.question11 }}cked{{/ifEquals}}">À la Voile avec un partenaire FFV</div>
+    <div class="che{{#ifEquals '2' marin.surveyjsReponsesJson.question11 }}cked{{/ifEquals}}">Canoë/ Kayak en mer avec un partenaire</div>
+    <div class="che{{#ifEquals '3' marin.surveyjsReponsesJson.question11 }}cked{{/ifEquals}}">À la Voile en autonomie</div>
+    <div class="che{{#ifEquals '4' marin.surveyjsReponsesJson.question11 }}cked{{/ifEquals}}">Autre navigation</div>
+    
+    <h5>Liste des diplômés : chef de flottille (+numéro de diplôme), chefs de Quart (+numéro de diplôme), chefs de bord (+numéro de diplôme)</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question22 }}</div>
+    <h5>Liste des bateaux : nom du bateau, type de bateau</h5>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question23 }}</div>
+    <div class="text-user">{{ marin.surveyjsReponsesJson.question26 }}</div>
+
+    <hr />
+{{/if}}
+
+
+<!--                                -->
+<!-- PAGE 5: Organisation pratique  -->
+<!--                                -->
+
+    <h2 id="pratique">Organisation pratique</h2>
+    <h3>Budget</h3>
+    <div>Cf: fichiers joints</div>
+    <ul>
+    {{#files.budget}}
+      <li>{{url}}</li>
+    {{/files.budget}}
+    </ul>
+
+
+
+
+
+
+    <h3>Lieu et transport</h3>
+{{#lieux.campLieux}}
+    <h4>
+      Du {{ date dateDebut }}
+      au {{ date dateFin }}
+      nous seront à "{{ libelle }}"
+    </h4>
+    <address>
+      <div>{{ adresseLigne1 }}</div>
+{{^adresseLigne2}}
+      <div>{{ adresseLigne2 }}</div>
+{{/adresseLigne2}}
+      <div>{{ codePostal }} {{ ville }} {{ pays }}</div>
+      <div><a href="tel:{{ telephone }}">{{ telephone }}</a></div>
+    </address>
+    <p>Distance : {{ nbreKm }} Km en {{ moyenTransport }}</p>
+{{/lieux.campLieux}}
+
+  <h4>Implantation du lieu</h4>
+    <div>Cf: fichiers joints</div>
+    <ul>
+    {{#files.lieu}}
+      <li>{{url}}</li>
+    {{/files.lieu}}
+    </ul>
+
+
+
+<!--                    -->
+<!-- PAGE 5: OUVERTURE  -->
+<!--                    -->
+
 {{#if ouverture }}
-    <h2>La démarche d'ouverture</h2>
+    <h2 id="ouverture">La démarche d'ouverture</h2>
 
     <h5> Indiquez les démarches effectuées : communication dans la paroisse, au service municipal de la jeunesse, via le réseau parents et amis, via les jeunes </h5>
     <div class="text-user">{{ trim ouverture.surveyjsReponsesJson.demarche-recrutement }}</div>
@@ -619,8 +878,13 @@ Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
     <hr />
 {{/if}}
 
+
+<!--                         -->
+<!-- PAGE 5: STAGE PRATIQUE  -->
+<!--                         -->
+
 {{#if bafa-bafd }}
-    <h2>Suivi de stage pratique</h2>
+    <h2 id="stage">Suivi de stage pratique</h2>
 
     <h5>Chef de stage</h5>
     <div class="text-user">{{ trim bafa-bafd.surveyjsReponsesJson.question1 }}</div>
@@ -665,14 +929,14 @@ Unité 	Garçons 	Filles 	1ère année 	2ème année 	3ème année
       Menus
       Budget
 
-TODO: Activités marines
+  3') Activités marines
+
 TODO: accompagnement spécifique
 TODO: Accueillir une unité étrangère
 
   
   4) le lieu de camp
-      Implentation
-      Adresse et numéraux utiles
+      
 
   [5) La démarche d'ouverture]
 
@@ -686,7 +950,7 @@ TODO: Accueillir une unité étrangère
 -->
 
     <hr />
-    <h2>Annexes</h2>
+    <h2 id="annexes">Annexes</h2>
     <h3>Les jeunes ({{participant.campAdherentParticipants.length}})</h3>
     <table class="table-list">
       <thead>

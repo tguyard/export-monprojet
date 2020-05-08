@@ -11,13 +11,96 @@
 body {
   width: 100%;
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
-  color: #444;
+  /* font-family: 'Open Sans', sans-serif; */
+  font-family: 'Sarabun', sans-serif;
+  color: #003a5d;
   background: none;
   font-size: var(--default-font-size);
-  padding: .5cm;
+  padding: 0 var(--page-margin);
 }
 
+@page {
+  margin-left: var(--page-margin);
+  margin-right: var(--page-margin);
+  margin-top: var(--page-margin);
+  margin-bottom: var(--page-margin);
+}
+
+@page :first {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#first-page {
+  position: relative;
+  height: 100%;
+}
+
+#first-page img {
+  width: 12cm;
+}
+
+#first-page .title {
+  text-align: center;
+  font-size: 34pt;
+  font-family: 'Caveat Brush', sans-serif;
+  margin-top: 5cm;
+  margin-bottom: 5cm
+}
+
+#first-page .subtitle {
+  text-align: center;
+  font-size: 30pt;
+  font-family: 'Caveat Brush', sans-serif;
+  margin-bottom: 1cm;
+}
+
+#first-page .date {
+  text-align: center;
+  font-size: 16pt;
+  font-weight: 200;  
+}
+
+#first-page .foot {
+  position: absolute;
+  bottom: 10mm;
+  left: -2cm;
+  right: -2cm;
+  height: 45%;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+#first-page .blue-background {
+  background-color: #003a5d;
+  color: white;
+  padding: 2cm;
+  flex: 1;
+  margin: -2px;
+}
+
+#first-page .paper{
+  content: ' ';
+  display: block;
+  width: 100%;
+  height: 1cm;
+  background-image: url('./assets/papier-bleu instit.png');
+  background-position-x: left;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#first-page .paper.top {
+
+}
+
+#first-page .paper.bottom {
+  background-position-y: bottom;
+  
+}
 
 hr {
     margin-bottom: var(--page-margin);
@@ -34,7 +117,8 @@ h4,
 h5,
 h6 {
   page-break-after: avoid;
-  font-family: 'Open Sans', sans-serif;
+  /* font-family: 'Open Sans', sans-serif; */
+  font-family: 'Raleway', sans-serif;
   orphans: 3;
   widows: 3;
 }
@@ -70,6 +154,18 @@ h5 {
 h5 {
   font-style: italic;
   margin: 3mm 0;
+}
+
+.lj h1, .lj h2 {
+  color: #ff8300;
+}
+
+.sg h1, .sg h2 {
+  color: #0077b3;
+}
+
+.pk h1, .pk h2 {
+  color: #d03f15;
 }
 
 p,
@@ -167,4 +263,13 @@ td.option {
 }
 
 
+div.toc >ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+div.toc >ul >li {
+  list-style: none;
+  margin-top: 5mm;
+}
 
