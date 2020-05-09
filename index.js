@@ -68,7 +68,7 @@ function render(view, outputPath) {
     }
 }
 
-function httpRequest(options, content) {
+async function httpRequest(options, content) {
     return new Promise((resolve, reject) => {
         options.hostname = 'monprojet.sgdf.fr';
         options.port = 443;
@@ -111,7 +111,7 @@ function httpRequest(options, content) {
     });
 }
 
-function httpDownload(options, filename) {
+async function httpDownload(options, filename) {
     return new Promise((resolve, reject) => {
         const f = fs.createWriteStream(filename);
         options.hostname = 'monprojet.sgdf.fr';
@@ -136,7 +136,7 @@ function httpDownload(options, filename) {
 }
 
 
-function login(id, password) {
+async function login(id, password) {
     return httpRequest({
         path: '/api/login',
         method: 'POST',
@@ -146,7 +146,7 @@ function login(id, password) {
     });
 }
 
-function getModule(url, token) {
+async function getModule(url, token) {
     return httpRequest({
         path: url,
         method: 'GET',
@@ -156,121 +156,143 @@ function getModule(url, token) {
     });
 }
 
-login(config.login, config.password).then((credentials) => {
-    const modules = [];
-    for (const camp of camps) {
-        const campId = camp.id;
 
-        let view = {};
-        const m = getModule('/api/camps/' + campId + "?module=ENTETE", credentials.token).then(result => {
-            view.entete = result;
-            const promises = [];
-            const moduleCodes = [
-                { name: 'INFO_GENERALE', url: '/api/camps/' + campId + "?module=INFO_GENERALE" },
-                { name: 'LIEUX', url: '/api/camps/' + campId + "?module=LIEUX" },
-                { name: 'STAFF', url: '/api/camps/' + campId + "?module=STAFF" },
-                { name: 'PARTICIPANT', url: '/api/camps/' + campId + "?module=PARTICIPANT" },
-                { name: 'PROJET_PEDA', url: '/api/camps/' + campId + "?module=PROJET_PEDA" },
-                { name: 'JOURNEE_TYPE', url: '/api/camps/' + campId + "?module=JOURNEE_TYPE" },
-                { name: 'GRILLE_ACTIVITE', url: '/api/camps/' + campId + "?module=GRILLE_ACTIVITE" },
-                { name: 'MENU', url: '/api/camps/' + campId + "?module=MENU" },
-                { name: 'BUDGET', url: '/api/camps/' + campId + "?module=BUDGET" },
-                { name: 'NUMERO_UTILE', url: '/api/camps/' + campId + "?module=NUMERO_UTILE" }
-            ];
-            // '/api/camps/' + campId + "?module=" + moduleName
-            // api/camp-modules/1659
-            for (const module of result.campModules) {
-                if (module.actif) {
-                    moduleCodes.push({
-                        name: module.module.code,
-                        url: '/api/camp-modules/' + module.id
-                    });
-                }
-            }
-            for (const code of moduleCodes) {
-                promises.push(getModule(code.url, credentials.token));
-            }
-            return Promise.all(promises).then(modules => {
-                for (let i = 0; i < moduleCodes.length; ++i) {
-                    const m = modules[i];
-                    m.camp = m.camp817;
-                    view[moduleCodes[i].name.toLowerCase().replace('/', '-')] = m;
-                }
-                if (view.entete.typeCamp.code === '8-11') {
-                    view.branche = {
-                        id: 'lj',
-                        name: 'peuplade',
-                    };
-                }
-                if (view.entete.typeCamp.code === '11-14') {
-                    view.branche = {
-                        id: 'sg',
-                        name: 'tribue',
-                    };
-                }
-                if (view.entete.typeCamp.code === '14-17') {
-                    view.branche = {
-                        id: 'pk',
-                        name: 'caravanne',
-                    };
-                }
-                if (view['appel-age-sup'] != null && view['appel-age-sup'].surveyjsReponsesJson) {
-                    for (const key in view['appel-age-sup'].surveyjsReponsesJson) {
-                        if (view['appel-age-sup'].surveyjsReponsesJson.hasOwnProperty(key)) {
-                            view['appel-age-sup'].appel = view['appel-age-sup'].surveyjsReponsesJson[key];
-                        }
-                    }
-                }
-                const outputDir = config.output + camp.name;
-                view.outputDir = outputDir;
-                view.outputName = camp.name;
-                if (!fs.existsSync(outputDir)) {
-                    fs.mkdirSync(outputDir);
-                }
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
 
-                view.files = {};
-                if (view.info_generale.campFichiers && view.info_generale.campFichiers.length > 0) {
-                    const files = view.info_generale.campFichiers;
-                    const downloads = [];
-                    for (const file of files) {
-                        if (file.id === 6) {
-                            continue;
-                        }
-                        const fileOutput = outputDir + '/' + file.categorie.toLowerCase();
-                        if (!fs.existsSync(fileOutput)) {
-                            fs.mkdirSync(fileOutput);
-                        }
-                        const d = httpDownload({
-                            path: "/api/camp-fichiers/" + file.id,
-                            method: 'GET',
-                            headers: {
-                                'Authorization': 'Bearer ' + credentials.token,
-                            }
-                        }, fileOutput + "/" + file.nom)
-                        downloads.push(d);
 
-                        if (view.files[file.categorie.toLowerCase()] == null) {
-                            view.files[file.categorie.toLowerCase()] = [{
-                                name: file.nom,
-                                url: file.categorie.toLowerCase() + '/' + file.nom,
-                            }];
-                        }
-                        view.files[file.categorie.toLowerCase()].push()
-                    }
-                    return Promise.all(downloads).then(() => view)
-                }
-                return view;
-            });
-        }).then(view => {
-            // console.log(JSON.stringify(view));
-            render(view, view.outputDir + '/' + view.outputName);
-        });
+async function main() {
 
-        modules.push(m)
+    const credentials = await login(config.login, config.password);
+    if (credentials.token == null) {
+        console.log(credentials);
+        throw new Error("Cannot find the token");
     }
 
-    return Promise.all(modules);
+    for (const camp of camps) {
 
-}).catch(err => {
-    console.log(err);
-});
+        //
+        // Create output dir for the camp
+        //
+        const outputDir = config.output + camp.name;
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+        }
+        
+        const view = {
+            outputDir,
+            outputName: camp.name,
+        };
+
+        // 
+        // Populate the view.
+        //
+
+        const result = await getModule('/api/camps/' + camp.id + "?module=ENTETE", credentials.token);
+        view.entete = result;
+
+        const modules = [
+            { name: 'INFO_GENERALE', url: '/api/camps/' + camp.id + "?module=INFO_GENERALE" },
+            { name: 'LIEUX', url: '/api/camps/' + camp.id + "?module=LIEUX" },
+            { name: 'STAFF', url: '/api/camps/' + camp.id + "?module=STAFF" },
+            { name: 'PARTICIPANT', url: '/api/camps/' + camp.id + "?module=PARTICIPANT" },
+            { name: 'PROJET_PEDA', url: '/api/camps/' + camp.id + "?module=PROJET_PEDA" },
+            { name: 'JOURNEE_TYPE', url: '/api/camps/' + camp.id + "?module=JOURNEE_TYPE" },
+            { name: 'GRILLE_ACTIVITE', url: '/api/camps/' + camp.id + "?module=GRILLE_ACTIVITE" },
+            { name: 'MENU', url: '/api/camps/' + camp.id + "?module=MENU" },
+            { name: 'BUDGET', url: '/api/camps/' + camp.id + "?module=BUDGET" },
+            { name: 'NUMERO_UTILE', url: '/api/camps/' + camp.id + "?module=NUMERO_UTILE" }
+        ];
+        for (const module of result.campModules) {
+            if (module.actif) {
+                modules.push({
+                    name: module.module.code,
+                    url: '/api/camp-modules/' + module.id
+                });
+            }
+        }
+
+        //
+        // Get all the modules
+        //
+        for (const code of modules) {
+            const m = await getModule(code.url, credentials.token);
+            m.camp = m.camp817;
+            view[code.name.toLowerCase().replace('/', '-')] = m;
+        }
+
+        //
+        // Format the view
+        //
+        if (view.entete.typeCamp.code === '8-11') {
+            view.branche = {
+                id: 'lj',
+                name: 'peuplade',
+            };
+        }
+        if (view.entete.typeCamp.code === '11-14') {
+            view.branche = {
+                id: 'sg',
+                name: 'tribue',
+            };
+        }
+        if (view.entete.typeCamp.code === '14-17') {
+            view.branche = {
+                id: 'pk',
+                name: 'caravanne',
+            };
+        }
+        if (view['appel-age-sup'] != null && view['appel-age-sup'].surveyjsReponsesJson) {
+            for (const key in view['appel-age-sup'].surveyjsReponsesJson) {
+                if (view['appel-age-sup'].surveyjsReponsesJson.hasOwnProperty(key)) {
+                    view['appel-age-sup'].appel = view['appel-age-sup'].surveyjsReponsesJson[key];
+                }
+            }
+        }
+
+        //
+        // Download the files in the view.
+        //
+        view.files = {};
+        if (view.info_generale.campFichiers && view.info_generale.campFichiers.length > 0) {
+            const files = view.info_generale.campFichiers;
+            for (const file of files) {
+                if (file.id === 6) {
+                    continue;
+                }
+                const fileOutput = outputDir + '/' + file.categorie.toLowerCase();
+                if (!fs.existsSync(fileOutput)) {
+                    fs.mkdirSync(fileOutput);
+                }
+                await httpDownload({
+                    path: "/api/camp-fichiers/" + file.id,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + credentials.token,
+                    }
+                }, fileOutput + "/" + file.nom)
+
+                if (view.files[file.categorie.toLowerCase()] == null) {
+                    view.files[file.categorie.toLowerCase()] = [{
+                        name: file.nom,
+                        url: file.categorie.toLowerCase() + '/' + file.nom,
+                    }];
+                }
+                view.files[file.categorie.toLowerCase()].push()
+            }
+        }
+
+        //
+        // The actual render of the pdf file.
+        //
+        render(view, view.outputDir + '/' + view.outputName);
+
+        // do not overcharge the servers ...
+        await sleep(2000);
+    }
+}
+
+main();
