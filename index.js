@@ -169,7 +169,7 @@ function sleep(ms) {
 }
 
 const includePersonalData = false;
-const forceCreation = true;
+const forceCreation = false;
 async function main() {
 
     const credentials = await login(config.login, config.password);
