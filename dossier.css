@@ -11,8 +11,7 @@
 body {
   width: 100%;
   margin: 0;
-  /* font-family: 'Open Sans', sans-serif; */
-  font-family: 'Sarabun', sans-serif;
+  font-family: 'Sarabun';
   color: #003a5d;
   background: none;
   font-size: var(--default-font-size);
@@ -45,7 +44,7 @@ body {
 #first-page .title {
   text-align: center;
   font-size: 34pt;
-  font-family: 'Caveat Brush', sans-serif;
+  font-family: 'Caveat Brush';
   margin-top: 5cm;
   margin-bottom: 5cm
 }
@@ -53,7 +52,7 @@ body {
 #first-page .subtitle {
   text-align: center;
   font-size: 30pt;
-  font-family: 'Caveat Brush', sans-serif;
+  font-family: 'Caveat Brush';
   margin-bottom: 1cm;
 }
 
@@ -117,8 +116,7 @@ h4,
 h5,
 h6 {
   page-break-after: avoid;
-  /* font-family: 'Open Sans', sans-serif; */
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Raleway';
   orphans: 3;
   widows: 3;
 }
@@ -210,6 +208,10 @@ td, th {
   font-size: var(--default-font-size)
 }
 
+table.bigger td, table.bigger th {
+  padding: 3mm 6mm;
+}
+
 td + th {
   /* border-left: 1px solid var(--border-color); */
   padding-left: 12mm;
@@ -273,3 +275,6 @@ div.toc >ul >li {
   margin-top: 5mm;
 }
 
+.nowrap {
+  white-space: nowrap;
+}

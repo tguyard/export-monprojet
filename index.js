@@ -1,16 +1,18 @@
 
 const Handlebars = require("handlebars");
 const moment = require("moment");
-const fs = require('fs')
-const https = require('https')
+const fs = require('fs');
+const https = require('https');
 const pdf = require('html-pdf');
-const path = require('path')
+const path = require('path');
+const stringify = require('csv-stringify/lib/sync');
+
 
 moment.locale('fr');
 
-const example = require('./example.json')
-const config = require('./config.json')
-const camps = require('./camps.json')
+const example = require('./example.json');
+const config = require('./config.json');
+const camps = require('./camps.json');
 const source = './dossier.html.mustache';
 
 const template = Handlebars.compile(fs.readFileSync(source, 'utf8'));
@@ -18,10 +20,13 @@ Handlebars.registerHelper('date', function (datestr) {
     return moment(datestr).format("D MMMM");
 });
 Handlebars.registerHelper('nameddate', function (datestr) {
-    return moment(datestr).format("dddd D");
+    return moment(datestr).format("dd D");
 });
 Handlebars.registerHelper('fulldate', function (datestr) {
     return moment(datestr).format("dddd D MMMM YYYY");
+});
+Handlebars.registerHelper('datetime', function (datestr) {
+    return moment(datestr).format("dddd D MMMM YYYY HH:mm:ss");
 });
 Handlebars.registerHelper('shortdate', function (datestr) {
     return moment(datestr).format("DD/MM");
@@ -46,7 +51,7 @@ function render(view, outputPath) {
         const html = template(view);
 
         // write file on hard drive
-        fs.writeFileSync(outputPath + ".html", html)
+        // fs.writeFileSync(outputPath + ".html", html)
 
         // create pdf
         const options = {
@@ -163,7 +168,8 @@ function sleep(ms) {
     });
 }
 
-
+const includePersonalData = false;
+const forceCreation = true;
 async function main() {
 
     const credentials = await login(config.login, config.password);
@@ -181,9 +187,28 @@ async function main() {
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir);
         }
-        
+
+
+        //
+        // read the metadata.
+        //
+        let metadata = null;
+        const metadataFile = outputDir + '/metadata.json'
+        try {
+            if (fs.existsSync(metadataFile)) {
+                metadata = JSON.parse(fs.readFileSync(outputDir + '/metadata.json', 'utf8'));
+            }
+            if (metadata == null) {
+                metadata = {};
+            }
+        } catch (error) {
+            // ignore error when reading metadata
+            console.log(error);
+        }
+
         const view = {
             outputDir,
+            includePersonalData,
             outputName: camp.name,
         };
 
@@ -193,6 +218,21 @@ async function main() {
 
         const result = await getModule('/api/camps/' + camp.id + "?module=ENTETE", credentials.token);
         view.entete = result;
+
+        // Make sure there was some modifications
+        if (result.histoDerniereModification != null && result.histoDerniereModification.dateHeureModification != null) {
+            const lastModif = moment(result.histoDerniereModification.dateHeureModification);
+            camp.lastModif = lastModif.format();
+            if (metadata.creationDate != null) {
+                if (lastModif < moment(metadata.creationDate) && !forceCreation) {
+                    continue;
+                }
+            }
+        }
+
+        fs.writeFileSync(metadataFile, JSON.stringify({
+            creationDate: moment().format(),
+        })) ;
 
         const modules = [
             { name: 'INFO_GENERALE', url: '/api/camps/' + camp.id + "?module=INFO_GENERALE" },
@@ -253,6 +293,14 @@ async function main() {
             }
         }
 
+        // formation
+        if (view.staff.campAdherentStaffsInformations != null && view.staff.campAdherentStaffsInformations.length > 0) {
+            for (const info of view.staff.campAdherentStaffsInformations) {
+                const staff = view.staff.campAdherentStaffs.find(s => s.adherent.numero === info.numero);
+                // TODO: finish me !
+            }
+        }
+
         //
         // Download the files in the view.
         //
@@ -293,6 +341,18 @@ async function main() {
         // do not overcharge the servers ...
         await sleep(2000);
     }
+
+    // create a report
+    const records = [];
+    for (const camp of camps) {
+        records.push([
+            camp.name,
+            camp.lastModif,
+            'https://monprojet.sgdf.fr/camp/' + camp.id
+        ]);
+    }
+    const data = stringify(records);
+    fs.writeFileSync(config.output + '/camps.csv', data);
 }
 
 main();

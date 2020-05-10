@@ -1,11 +1,7 @@
 <html>
   <head>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-      rel="stylesheet"
-    />
-
-    <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet"> 
+  {{! USe the system font to not have a too big pdf (BUG of phantomJS) }}
+    {{! <link href="https://fonts.googleapis.com/css?family=Caveat+Brush|Raleway:400,400i,700|Sarabun&display=swap" rel="stylesheet">  }}
     <link rel="stylesheet" type="text/css" href="./dossier.css" />
   </head>
   <body class="{{ branche.id }}">
@@ -45,6 +41,15 @@
 <!--               -->
 <!-- PAGE 1: INFOS -->
 <!--               -->
+
+    <h3 id="infos">Historique</h3>
+    <table class="properties" >
+      <tr>
+        <th>Dernières modifications</th>
+        <td>{{ datetime entete.histoDerniereModification.dateHeureModification }}</td>
+        <td>par <span class="name">{{ lower entete.histoDerniereModification.adherent.prenom }}</span></td>
+      </tr>
+    </table>
 
     <h3 id="infos">Infos</h3>
     <table class="properties" style="width: 100%;">
@@ -113,24 +118,38 @@
     <h4>La maitrise</h4>
 
 <!-- FIXME: ajouter les colonnes qui manques -->
-    <table class="">
+
+{{! responsabiliteAutre	false
+responsabiliteAutreDetail	null }}
+{{! commentaireAdherentStaff	null }}
+
+
+
+    <table class="bigger">
       <thead>
         <tr>
           <th>Nom</th>
           <th>En stage</th>
-          <th>Resp</th>
+          <th>Responsabilité</th>
           <th>Présent</th>
         </tr>
       </thead>
       <tbody>
 {{#staff.campAdherentStaffs}}
         <tr>
-          <td class="name">{{lower adherent.prenom }} {{lower adherent.nom }}</td>
+          <td class="name">{{lower adherent.prenom }}{{#if includePersonalData}} {{lower adherent.nom }}{{/if}}</td>
           <td>
             {{#if validationStagePratiqueBafa}}BAFA{{/if}}
             {{#if validationStagePratiqueBafd}}BAFD{{/if}}
           </td>
-          <td></td>
+          <td>
+            {{#ifEquals 'D' roleStaff}}<div title="Intendant">Directeur, </div>{{/ifEquals}}
+            {{#if responsabiliteIntendant}}<div title="Intendant">Intendant, </div>{{/if}}
+            {{#if responsabiliteTresorier}}<div title="Trésorier">Trésorier, </div>{{/if}}
+            {{#if responsabiliteAS}}<div title="Assistant sanitaire">Sanitaire, </div>{{/if}}
+            {{#if responsabiliteMateriel}}<div title="Matos">Matos, </div>{{/if}}
+            {{#if responsabiliteAutre}}<div title="Autre">Autre: {{ responsabiliteAutreDetail }}, </div>{{/if}}
+          </td>
           <td>du {{ shortdate dateDebutPresence }} au {{ shortdate dateFinPresence }}</td>
         </tr>
 {{/staff.campAdherentStaffs}}
@@ -139,7 +158,7 @@
 
     <h4>Équipier territorial en soutient</h4>
     {{#info_generale.campAdherentSoutiens}}
-    <div class="name">{{lower adherent.prenom }} {{lower adherent.nom}}</div>
+    <div class="name">{{lower adherent.prenom }}{{#if includePersonalData}} {{lower adherent.nom}}{{/if}}</div>
     {{/info_generale.campAdherentSoutiens}}
 
     <hr />
@@ -165,6 +184,11 @@
             <li>Projet pédagogique</li>
           </ul>
         </li>
+        {{#if apas}}
+        <li>
+          <div><a href="#accompagnement">Accompagnement spécifique d'un jeune</a></div>
+        </li>
+        {{/if}}
         <li>
           <div><a href="#enrich">Enrichir le projet</a></div>
           <ul>
@@ -193,6 +217,11 @@
         {{#if international-8-17}}
         <li>
           <div><a href="#inter">Un camp à l'international</a></div>
+        </li>
+        {{/if}}
+        {{#if accueil-etranger}}
+        <li>
+          <div><a href="#accueil-etranger">Accueil d'une unité étrangère</a></div>
         </li>
         {{/if}}
         {{#if jumelage}}
@@ -267,6 +296,59 @@ TODO: Accueillir une unité étrangère
 
 
     <hr />
+
+<!--                                               -->
+<!-- PAGE 3: Accompagnement spécifique d'un jeune  -->
+<!--                                               -->
+
+{{#if apas}}
+    <h2 href="accompagnement">La charte de maîtrise</h2>
+
+    <h5>
+      Y a-t-il des jeunes en situation de handicap, hyperactif, souffrant d’une pathologie, 
+      ayant une situation familiale difficile, ou étant dans une situation pouvant impacter 
+      la vie de camp ? Avec quel partenaire : parents, responsable de groupe, accompagnateur 
+      pédagogique, équipier territorial... en avez-vous discuté ? Comment en maîtrise, 
+      préparez-vous et organisez-vous à accueillir cette situation dans les meilleures 
+      conditions possibles ?
+    </h5>
+
+    <table class="survey">
+      <thead>
+        <tr>
+          <th><div>Situation particulière</div></th>
+          <th><div>Partenaire</div></th>
+          <th><div>Organisation de la maîtrise en conséquence</div></th>
+        </tr>
+      </thead>
+      <tbody>
+{{#apas.surveyjsReponsesJson.question1.row1}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+        </tr>
+{{/apas.surveyjsReponsesJson.question1.row1}}
+{{#apas.surveyjsReponsesJson.question1.row2}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+        </tr>
+{{/apas.surveyjsReponsesJson.question1.row2}}
+{{#apas.surveyjsReponsesJson.question1.row3}}
+        <tr>
+          <td class="option">{{ column1 }}</td>
+          <td class="option">{{ column2 }}</td>
+          <td class="option">{{ column3 }}</td>
+        </tr>
+{{/apas.surveyjsReponsesJson.question1.row3}}
+      </tbody>
+    </table>
+
+
+    <hr />
+{{/if}}
 
 <!--                             -->
 <!-- PAGE 3: ENRICHIR LE PROJET  -->
@@ -583,11 +665,21 @@ TODO: Accueillir une unité étrangère
 <!-- PAGE 5: JUMELAGE  -->
 <!--                   -->
 
+{{#if accueil-etranger}}
+    <h2 id="accueil-etranger">Accueil d'une unité étrangère</h2>
+    <div>Attention, cette partie n'est pas extraite !</div>
+{{/if}}
+
+
+<!--                   -->
+<!-- PAGE 5: JUMELAGE  -->
+<!--                   -->
+
 
 {{#if jumelage}}
     <h2 id="jumelage">Jumelage</h2>
 
-    <h2>Les jeunes</h2>
+    <h3>Les jeunes</h3>
     <table class="survey">
       <thead>
         <tr>
@@ -639,7 +731,7 @@ TODO: Accueillir une unité étrangère
     des unités jumelées ?</h5>
     <div class="text-user">{{ trim jumelage.surveyjsReponsesJson.question2 }}</div>
 
-    <h2> Les maîtrises </h2>
+    <h3> Les maîtrises </h3>
     <table class="survey">
       <thead>
         <tr>
@@ -735,7 +827,7 @@ TODO: Accueillir une unité étrangère
       <tbody>
 {{#grille_activite.campGrilleActivites}}
         <tr>
-          <td>
+          <td class="nowrap">
             {{ nameddate dateActivite }}
             {{#ifEquals 1 creneau }}matin{{/ifEquals}}
             {{#ifEquals 2 creneau }}aprem'{{/ifEquals}}
@@ -762,7 +854,7 @@ TODO: Accueillir une unité étrangère
       <tbody>
 {{#menu.campMenus}}
         <tr>
-          <td>
+          <td class="nowrap">
             {{ nameddate dateMenu }}
             {{#ifEquals 1 repas }}ptit déj{{/ifEquals}}
             {{#ifEquals 2 repas }}déjeuner{{/ifEquals}}
@@ -950,6 +1042,7 @@ TODO: Accueillir une unité étrangère
     <hr />
     <h2 id="annexes">Annexes</h2>
     <h3>Les jeunes ({{participant.campAdherentParticipants.length}})</h3>
+{{#if includePersonalData}}
     <table class="table-list">
       <thead>
         <tr>
@@ -968,7 +1061,9 @@ TODO: Accueillir une unité étrangère
 {{/participant.campAdherentParticipants}}
       </tbody>
     </table>
-
+{{else}}
+  <div>Pour éviter la diffusion de données personnelles, la liste des jeunes n'est pas inclue.</div>
+{{/if}}
     <hr />
 
     <h3>Numéros utiles</h3>
@@ -985,7 +1080,7 @@ TODO: Accueillir une unité étrangère
         <tr>
           <td>{{ numeroUtile.libelle }}</td>
           <td>{{ infosContact }}</td>
-          <td>{{ telephoneContact }}</td>
+          <td class="nowrap">{{ telephoneContact }}</td>
         </tr>
 {{/numero_utile.campNumeroUtiles}}
       </tbody>

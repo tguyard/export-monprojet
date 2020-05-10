@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "csv": "^5.3.2",
+    "csv-stringify": "^5.5.0",
     "handlebars": "^4.7.6",
     "html-pdf": "^2.2.0",
     "moment": "^2.25.1",
