@@ -1,4 +1,6 @@
 
+// run with: node --max-http-header-size 15000 index.js
+
 const Handlebars = require("handlebars");
 const moment = require("moment");
 const fs = require('fs');
@@ -6,11 +8,8 @@ const https = require('https');
 const pdf = require('html-pdf');
 const path = require('path');
 const stringify = require('csv-stringify/lib/sync');
-
-
 moment.locale('fr');
 
-const example = require('./example.json');
 const config = require('./config.json');
 const camps = require('./camps.json');
 const source = './dossier.html.mustache';
