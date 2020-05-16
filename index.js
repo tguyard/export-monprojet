@@ -168,7 +168,7 @@ function sleep(ms) {
 }
 
 const includePersonalData = false;
-const forceCreation = false;
+const forceCreation = true;
 async function main() {
 
     const credentials = await login(config.login, config.password);
@@ -177,6 +177,8 @@ async function main() {
         throw new Error("Cannot find the token");
     }
 
+    const campCsvData = []
+    const chefCsvData = []
     for (const camp of camps) {
 
         //
@@ -231,7 +233,7 @@ async function main() {
 
         fs.writeFileSync(metadataFile, JSON.stringify({
             creationDate: moment().format(),
-        })) ;
+        }));
 
         const modules = [
             { name: 'INFO_GENERALE', url: '/api/camps/' + camp.id + "?module=INFO_GENERALE" },
@@ -337,21 +339,171 @@ async function main() {
         //
         render(view, view.outputDir + '/' + view.outputName);
 
+        // generate the camps.csv
+        campCsvData.push({
+            id: camp.id,
+            name: camp.name,
+            modif: moment(camp.lastModif).format("YYYY-MM-DD"),
+            structures: view.info_generale.campStructures
+                .filter(s => s.organisatrice)
+                .map(s => s.structure),
+            structuresOrganisatrice: view.info_generale.campStructures
+                .filter(s => s.organisatrice === true)
+                .map(s => s.structure),
+            etat: view.entete.statut,
+            dateDebut: moment(view.entete.dateDebut).format("YYYY-MM-DD"),
+            dateFin: moment(view.entete.dateFin).format("YYYY-MM-DD"),
+
+            nbAnimateurs: view.info_generale.camp.previsionNbreAnimateurs,
+            nbJeunes: view.info_generale.camp.previsionNbreParticipants,
+            nbFilles: view.info_generale.camp.previsionNbreFilles,
+            nbGarcons: view.info_generale.camp.previsionNbreGarcons,
+            nb613: view.info_generale.camp.previsionNbre613,
+            nb1417: view.info_generale.camp.previsionNbre1417,
+            ageMini: view.info_generale.camp.ageMini,
+            ageMaxi: view.info_generale.camp.ageMaxi,
+            lieux: (view.lieux.campLieuPrincipal.codePostal || "") + " " + (view.lieux.campLieuPrincipal.ville || "" ) + " " + (view.lieux.campLieuPrincipal.pays || ""),
+            address: (view.lieux.campLieuPrincipal.libelle || "") + "\n" + (view.lieux.campLieuPrincipal.adresseLigne1 || "") + "\n" + (view.lieux.campLieuPrincipal.adresseLigne2 || ""),
+        });
+
+        for (const chef of view.staff.campAdherentStaffs) {
+            const infos = view.staff.campAdherentStaffsInformations.find(i => i.numero === chef.adherent.numero) || [];
+            const resp = [];
+            if (chef.responsabiliteIntendant) {
+                resp.push('Intendant');
+            }
+            if (chef.responsabiliteTresorier) {
+                resp.push('Trésorier');
+            }
+            if (chef.responsabiliteAS) {
+                resp.push('Sanitaire');
+            }
+            if (chef.responsabiliteMateriel) {
+                resp.push('Materiel');
+            }
+            if (chef.responsabiliteAutre) {
+                resp.push('Autre');
+            }
+            if (chef.responsabiliteAutreDetail) {
+                resp.push(chef.responsabiliteAutreDetail);
+            }
+            chefCsvData.push({
+                id: camp.id,
+                numero: chef.adherent.numero,
+                nom: chef.adherent.nom,
+                prenom: chef.adherent.prenom,
+                role: chef.roleStaff === 'D' ? 'Directeur' : (chef.roleStaff === 'C' ? 'Chef' : 'Autre'),
+                dateDebutPresence: moment(chef.dateDebutPresence).format("YYYY-MM-DD"),
+                dateFinPresence: moment(chef.dateFinPresence).format("YYYY-MM-DD"),
+                stage: chef.validationStagePratiqueBafa ? 'BAFA' : (chef.validationStagePratiqueBafd ? 'BAFD' : ''),
+                qualification: (infos.adherentQualifications || []).map(q => q.type).join(" | "),
+                resp: resp.join(' | '),
+            });
+        }
+
+        // Qualification,
+        // responsabilités
+
         // do not overcharge the servers ...
         await sleep(2000);
     }
 
-    // create a report
-    const records = [];
-    for (const camp of camps) {
-        records.push([
-            camp.name,
-            camp.lastModif,
-            'https://monprojet.sgdf.fr/camp/' + camp.id
+    {
+        // create CampCSV
+        const campCsv = [];
+        campCsv.push([
+            "ID",
+            "Nom",
+            "Modifié le",
+            "Structure Organisatrice",
+            "Structure",
+            "État",
+            "Début",
+            "Fin",
+            "Animateurs",
+            "Jeunes",
+            "Garçons",
+            "Filles",
+            "6-13 ans",
+            "14-17 ans",
+            "age Min",
+            "age Max",
+            "Lieu",
+            "Adresse",
         ]);
+        for (const c of campCsvData) {
+            campCsv.push([
+                c.id,
+                c.name,
+                c.modif,
+                c.structuresOrganisatrice.map(s => s.libelle +" (" +s.code + ")").join(" | "),
+                c.structures.map(s => s.libelle +" (" +s.code + ")").join(" | "),
+                c.etat,
+                c.dateDebut,
+                c.dateFin,
+                c.nbAnimateurs,
+                c.nbJeunes,
+                c.nbFilles,
+                c.nbGarcons,
+                c.nb613,
+                c.nb1417,
+                c.ageMini,
+                c.ageMaxi,
+                c.lieux,
+                c.address,
+            ]);
+        }
+        const data = stringify(campCsv);
+        fs.writeFileSync(config.output + '/camps.csv', data);   
     }
-    const data = stringify(records);
-    fs.writeFileSync(config.output + '/camps.csv', data);
+    {
+
+
+
+
+        // create chefCSV
+        const chefCSV = [];
+        chefCSV.push([
+            "ID",
+            "Numéro adhérent",
+            "Nom",
+            "Prénom",
+            "Role",
+            "Date début",
+            "Date de fin",
+            "En stage",
+            "Qualifications",
+            "Responsabilités",
+        ]);
+        for (const c of chefCsvData) {
+            chefCSV.push([
+                c.id,
+                c.numero,
+                c.nom,
+                c.prenom,
+                c.role,
+                c.dateDebutPresence,
+                c.dateFinPresence,
+                c.stage,
+                c.qualification,
+                c.resp,
+            ]);
+        }
+        const data = stringify(chefCSV);
+        fs.writeFileSync(config.output + '/chefs.csv', data);   
+    }
+
+    // // create a report
+    // const records = [];
+    // for (const camp of camps) {
+    //     records.push([
+    //         camp.name,
+    //         camp.lastModif,
+    //         'https://monprojet.sgdf.fr/camp/' + camp.id
+    //     ]);
+    // }
+    // const data = stringify(records);
+    // fs.writeFileSync(config.output + '/dateModifications.csv', data);
 }
 
 main();

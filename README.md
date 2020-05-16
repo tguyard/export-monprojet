@@ -1,7 +1,6 @@
 Export pdf pour monprojet.sgdf.fr
 =================================
 
-
 Prérequis
 ---------
 
@@ -19,3 +18,12 @@ Lancer l'export
 ---------------
 
 ```> node --max-http-header-size 15000 index.js ```
+
+
+Developpement 
+-------------
+
+- Tout le code javascript est dans le fichier ```index.js```
+- On utilise un template handlebare pour générer un fichier html avec le contenu du dossier
+- Puis on utilise la lib node-html-pdf pour faire une conversion vers un fichier pdf.
+
