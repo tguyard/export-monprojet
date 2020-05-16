@@ -10,6 +10,8 @@ const path = require('path');
 const stringify = require('csv-stringify/lib/sync');
 moment.locale('fr');
 
+// const example = require('./example.json');
+
 const config = require('./config.json');
 const camps = require('./camps.json');
 const source = './dossier.html.mustache';
@@ -56,8 +58,8 @@ function render(view, outputPath) {
         const options = {
             base: 'file://' + path.resolve(source),
             border: {
-                top: "2cm",
-                bottom: "2cm",
+                top: "1cm",
+                bottom: "1cm",
                 left: "0",
                 right: "0",
             }
@@ -169,8 +171,9 @@ function sleep(ms) {
 
 const includePersonalData = false;
 const forceCreation = true;
-async function main() {
 
+
+async function main() {
     const credentials = await login(config.login, config.password);
     if (credentials.token == null) {
         console.log(credentials);
@@ -507,3 +510,6 @@ async function main() {
 }
 
 main();
+
+
+// render(example, 'example.pdf');

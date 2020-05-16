@@ -2,34 +2,14 @@
   box-sizing: border-box;
 }
 
-:root {
-  --page-margin: 2cm;
-  --border-color: #ddd9d9;
-  --default-font-size: 16px;
-}
-
 body {
   width: 100%;
   margin: 0;
   font-family: 'Sarabun';
   color: #003a5d;
   background: none;
-  font-size: var(--default-font-size);
-  padding: 0 var(--page-margin);
-}
-
-@page {
-  margin-left: var(--page-margin);
-  margin-right: var(--page-margin);
-  margin-top: var(--page-margin);
-  margin-bottom: var(--page-margin);
-}
-
-@page :first {
-  margin-left: 0;
-  margin-right: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  font-size: 12px;
+  padding: 0 1cm;
 }
 
 #first-page {
@@ -38,20 +18,20 @@ body {
 }
 
 #first-page img {
-  width: 12cm;
+  width: 10cm;
 }
 
 #first-page .title {
   text-align: center;
-  font-size: 34pt;
+  font-size: 28pt;
   font-family: 'Caveat Brush';
-  margin-top: 5cm;
-  margin-bottom: 5cm
+  margin-top: 2cm;
+  margin-bottom: 2cm;
 }
 
 #first-page .subtitle {
   text-align: center;
-  font-size: 30pt;
+  font-size: 24pt;
   font-family: 'Caveat Brush';
   margin-bottom: 1cm;
 }
@@ -64,7 +44,7 @@ body {
 
 #first-page .foot {
   position: absolute;
-  bottom: 10mm;
+  bottom: .5cm;
   left: -2cm;
   right: -2cm;
   height: 45%;
@@ -102,7 +82,7 @@ body {
 }
 
 hr {
-    margin-bottom: var(--page-margin);
+    margin-bottom: 2cm;
     color: transparent;
     border-color: transparent;
     page-break-after: always;
@@ -121,32 +101,30 @@ h6 {
   widows: 3;
 }
 h1 {
-  font-size: 19pt;
+  font-size: 16pt;
   text-align: center;
-  margin-bottom: var(--page-margin);
+  margin-bottom: 1cm;
 }
 h2 {
-  font-size: 18pt;
-  margin-top: calc(var(--page-margin) / 2);
+  font-size: 16pt;
+  margin-top: calc(1cm / 2);
   text-align: center;
 }
 h3 {
   margin-bottom: 10px;
-  font-size: var(--default-font-size);
-  margin-top: calc(var(--page-margin) / 2);
-  font-size: 16pt;
+  font-size: 12px;
+  margin-top: 3mm;
   font-style: italic;
 }
 h4,
 h5,
 h6 {
-  font-size: var(--default-font-size);
-  margin-bottom: 3mm;
+  font-size: 12px;
+  margin-bottom: 1mm;
 }
 
 h5 {
   font-weight: normal
-    
 }
 
 h5 {
@@ -176,6 +154,9 @@ h3 {
 table {
     border-collapse: collapse;
     margin-bottom: .5cm;
+    orphans: 3;
+    widows: 3;
+    page-break-inside: avoid;
 }
 
 table.table-list {
@@ -192,7 +173,7 @@ tr:last-child > td, tr:last-child > th {
 
 table thead th {
   font-weight: 600;
-  border-bottom: 1px solid var(--border-color) !important;
+  border-bottom: 1px solid #ddd9d9 !important;
 }
 
 table.properties th:after {
@@ -200,21 +181,21 @@ table.properties th:after {
 }
 
 td, th {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #ddd9d9;
   text-align: left;
   padding: 1mm 2mm;
   padding-left: 0;
  
-  font-size: var(--default-font-size)
+  font-size: 12px
 }
 
 table.bigger td, table.bigger th {
-  padding: 3mm 6mm;
+  padding: 1mm 3mm;
 }
 
 td + th {
-  /* border-left: 1px solid var(--border-color); */
-  padding-left: 12mm;
+  /* border-left: 1px solid #ddd9d9; */
+  padding-left: 10mm;
 }
 
 
@@ -223,8 +204,8 @@ table.survey {
 }
 
 table.survey td, table.survey th  {
-  border: 1px solid var(--border-color);
-  padding: 2mm;
+  border: 1px solid #ddd9d9;
+  padding: 1.5mm;
 }
 
 table.survey thead th  {
@@ -249,7 +230,7 @@ td.option {
 .text-user {
   white-space: pre-wrap;
   background: #f7f7f7;
-  border:1px solid var(--border-color);
+  border:1px solid #ddd9d9;
    border-radius: 4px;
   padding: 4mm;
   margin-bottom: .5cm;
