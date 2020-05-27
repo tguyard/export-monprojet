@@ -375,6 +375,7 @@ async function main() {
             nb1417: view.info_generale.camp.previsionNbre1417,
             ageMini: view.info_generale.camp.ageMini,
             ageMaxi: view.info_generale.camp.ageMaxi,
+            tel: view.staff.telephoneContactStaff || "",
             lieux: (view.lieux.campLieuPrincipal.codePostal || "") + " " + (view.lieux.campLieuPrincipal.ville || "" ) + " " + (view.lieux.campLieuPrincipal.pays || ""),
             address: (view.lieux.campLieuPrincipal.libelle || "") + "\n" + (view.lieux.campLieuPrincipal.adresseLigne1 || "") + "\n" + (view.lieux.campLieuPrincipal.adresseLigne2 || ""),
         });
@@ -435,12 +436,13 @@ async function main() {
             "Fin",
             "Animateurs",
             "Jeunes",
-            "Garçons",
             "Filles",
+            "Garçons",
             "6-13 ans",
             "14-17 ans",
             "age Min",
             "age Max",
+            "Tel",
             "Lieu",
             "Adresse",
         ]);
@@ -462,6 +464,7 @@ async function main() {
                 c.nb1417,
                 c.ageMini,
                 c.ageMaxi,
+                c.tel,
                 c.lieux,
                 c.address,
             ]);
