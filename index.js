@@ -75,6 +75,16 @@ function render(view, outputPath) {
 }
 
 async function httpRequest(options, content) {
+    try {
+        return doHttpRequest(options, content);
+    } catch (error) {
+        console.log("Error on http request. Retrying in 5 seconds", error);
+        await sleep(5000);
+        return doHttpRequest(options, content);
+    }
+}
+
+async function doHttpRequest(options, content) {
     return new Promise((resolve, reject) => {
         options.hostname = 'monprojet.sgdf.fr';
         options.port = 443;
@@ -415,7 +425,7 @@ async function main() {
         // create CampCSV
         const campCsv = [];
         campCsv.push([
-            "ID",
+            "Camp",
             "Nom",
             "Modifié le",
             "Structure Organisatrice",
@@ -467,7 +477,7 @@ async function main() {
         // create chefCSV
         const chefCSV = [];
         chefCSV.push([
-            "ID",
+            "Camp",
             "Numéro adhérent",
             "Nom",
             "Prénom",
